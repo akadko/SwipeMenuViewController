@@ -66,6 +66,16 @@ open class TabView: UIScrollView {
         super.layoutSubviews()
         resetAdditionViewPosition(index: currentIndex)
     }
+    
+    public func setGradientBackground(colorTop: UIColor, colorBottom: UIColor) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [colorBottom.cgColor, colorTop.cgColor]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 1.0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        gradientLayer.frame = bounds
+
+       layer.insertSublayer(gradientLayer, at: 0)
+    }
 
     @available(iOS 11.0, *)
     open override func safeAreaInsetsDidChange() {
@@ -357,10 +367,21 @@ extension TabView {
         case .circle:
             let itemView = itemViews[currentIndex]
             let height = itemView.bounds.height - options.additionView.padding.vertical
-            additionView = UIView(frame: CGRect(x: itemView.frame.origin.x + options.additionView.padding.left, y: 0, width: itemView.frame.width - options.additionView.padding.horizontal, height: height))
+            additionView = UIView(frame: CGRect(x: itemView.frame.origin.x + options.additionView.padding.left, y: 0, width: itemView.frame.width - options.additionView.padding.horizontal, height: height - 10.0))
             additionView.layer.position.y = itemView.layer.position.y
             additionView.layer.cornerRadius = options.additionView.circle.cornerRadius ?? additionView.frame.height / 2
             additionView.backgroundColor = options.additionView.backgroundColor
+            additionView.layer.shadowColor = UIColor.black.cgColor
+            additionView.layer.shadowOpacity = 0.5
+            additionView.layer.shadowOffset = .zero
+            additionView.layer.shadowRadius = 15
+            additionView.layer.shouldRasterize = true
+            
+            if #available(iOS 13.0, *) {
+                additionView.layer.borderColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1)
+            } else {
+                // Fallback on earlier versions
+            }
             
             if #available(iOS 11.0, *) {
                 if let m = options.additionView.circle.maskedCorners {

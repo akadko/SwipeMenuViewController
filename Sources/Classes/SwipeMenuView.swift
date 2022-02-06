@@ -141,6 +141,8 @@ public struct SwipeMenuViewOptions {
 
     /// ContentScrollView options
     public var contentScrollView = ContentScrollView()
+    
+    public var sportsmenView = UIView()
 
     public init() { }
 }
@@ -210,6 +212,14 @@ open class SwipeMenuView: UIView {
             contentScrollView.dataSource = self
             addSubview(contentScrollView)
             layout(contentScrollView: contentScrollView)
+        }
+    }
+    
+    open fileprivate(set) var sportsmenView: UIView? {
+        didSet {
+            guard let sportmenView = sportsmenView else { return }
+            addSubview(sportmenView)
+            layout(view: sportmenView)
         }
     }
 
@@ -325,6 +335,8 @@ open class SwipeMenuView: UIView {
 
         tabView = TabView(frame: CGRect(x: 0, y: 0, width: frame.width, height: options.tabView.height), options: options.tabView)
         tabView?.clipsToBounds = options.tabView.clipsToBounds
+        
+        sportsmenView = UIView(frame: CGRect(x: 0, y: 0, width: 40.0, height: options.tabView.height))
 
         contentScrollView = ContentScrollView(frame: CGRect(x: 0, y: options.tabView.height, width: frame.width, height: frame.height - options.tabView.height), default: defaultIndex, options: options.contentScrollView)
         contentScrollView?.clipsToBounds = options.contentScrollView.clipsToBounds
@@ -339,21 +351,42 @@ open class SwipeMenuView: UIView {
     private func layout(tabView: TabView) {
 
         tabView.translatesAutoresizingMaskIntoConstraints = false
-
+        tabView.layer.cornerRadius = 25
+        
         NSLayoutConstraint.activate([
-            tabView.topAnchor.constraint(equalTo: self.topAnchor),
-            tabView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            tabView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            tabView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
+            tabView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 100.0),
+            tabView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10.0),
             tabView.heightAnchor.constraint(equalToConstant: options.tabView.height)
             ])
     }
+    
+    private func layout(view: UIView) {
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 25
+        view.backgroundColor = .clear
+        view.layer.borderWidth = 2.5
+        
+        if #available(iOS 13.0, *) {
+            view.layer.borderColor = .init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        }
+        
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: self.topAnchor),
+            view.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10.0),
+            view.heightAnchor.constraint(equalToConstant: options.tabView.height + 20),
+            view.trailingAnchor.constraint(equalTo: tabView!.leadingAnchor, constant:  -15)
+        ]
+        )
+    }
+
 
     private func layout(contentScrollView: ContentScrollView) {
 
         contentScrollView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            contentScrollView.topAnchor.constraint(equalTo: self.topAnchor, constant: options.tabView.height),
+            contentScrollView.topAnchor.constraint(equalTo: self.topAnchor, constant: options.tabView.height + 20),
             contentScrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             contentScrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             contentScrollView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
